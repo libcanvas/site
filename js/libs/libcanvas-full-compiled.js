@@ -3929,11 +3929,34 @@ LibCanvas.Context2D = atom.Class({
 	},
 
 	// image
-	createImageData : function (w, h) {
-		if (w == null || h == null) {
-			w = this.canvas.width;
-			h = this.canvas.height;
+	createImageData : function () {
+		var w,h;
+		var args = Array.pickFrom(arguments);
+		switch (args.length) {
+			case 0:{
+				w = this.canvas.width;
+				h = this.canvas.height;
+			} break;
+
+			case 1: {
+				var o = args[0];
+				if (typeof o == 'object' && 'width' in o && 'height' in o) {
+					w = o.width;
+					h = o.height;
+				}
+				else {
+					throw new TypeError('Wrong args number in the Context.createImageData');
+				}
+			} break;
+
+			case 2: {
+				w = args[0];
+				h = args[1];
+			} break;
+
+			default: throw new TypeError('Wrong args number in the Context.createImageData');
 		}
+
 		return this.original('createImageData', [w, h], true);
 	},
 
@@ -3997,17 +4020,45 @@ LibCanvas.Context2D = atom.Class({
 	putImageData : function () {
 		var a = arguments;
 		var put = {};
-		if (a.length == 1 && typeof a == 'object') {
-			a = a[0];
-			put.image = a.image;
-			put.from  = Point(a.from);
-		} else if (a.length >= 2) {
-			put.image = a[0];
-			put.from = Point(a.length > 2 ? [a[1], a[2]] : a[1]);
+
+		switch (a.length) {
+			case 1: {
+				if (!typeof a == 'object') {
+					throw new TypeError('Wrong argument in the Context.putImageData');
+				}
+
+				a = a[0];
+				put.image = a.image;
+				put.from = Point(a.from);
+
+				if (a.crop) {
+					put.crop = (a.crop instanceof Rectangle) ? a.crop : new Rectangle(a.crop);
+				}
+			} break;
+
+			case 3: {
+				put.image = a[0];
+				put.from = Point([a[1], a[2]]);
+			} break;
+
+			case 7: {
+				put.image = a[0];
+				put.from = Point([a[1], a[2]]);
+
+				put.crop = new Rectangle(a[3], a[4], a[5], a[6]);
+			} break;
+
+			default : throw new TypeError('Wrong args number in the Context.putImageData');
 		}
-		return this.original('putImageData', [
-			put.image, put.from.x, put.from.y
-		]);
+
+		var args = [put.image, put.from.x, put.from.y];
+
+		if (put.crop) {
+			var rect = put.crop;
+			args.append([rect.from.x, rect.from.y, rect.width, rect.height])
+		}
+
+		return this.original('putImageData', args);
 	},
 	getImageData : function (rectangle) {
 		var rect = office.makeRect.call(this, arguments);

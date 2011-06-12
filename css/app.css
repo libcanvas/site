@@ -1,0 +1,104 @@
+p {
+    max-width: 900px;
+    line-height: 125%;
+}
+
+h1, h2 {
+    margin: 50px 0 25px 0;
+    color: #0086b3;
+}
+
+h3 {
+    padding-left: 15px;
+    color: #0086b3;
+    margin: 25px 0 15px 0;
+}
+
+a {
+    text-decoration: none;
+    color: #0086b3;
+    border-bottom: 1px solid #0086b3;
+}
+
+
+header, footer {
+    padding-left: 160px;
+}
+
+header li {
+    margin-bottom: 10px;
+    list-style: none;
+    font-size: large;
+}
+
+header li a, a.local {
+    border-bottom-style: dashed;
+}
+
+div#main{
+    position: relative;
+    margin-left: 160px;
+}
+
+pre {
+    border-left: 1px solid #d7d6d6;
+}
+
+div.bonus p {
+    padding-left: 40px;
+}
+
+div.bonus p#bonus_simple {
+    background: transparent url(../images/32x32/brain.png) no-repeat;
+}
+
+div.bonus p#bonus_modern {
+    background: transparent url(../images/32x32/flask.png) no-repeat;
+}
+
+div.bonus p#bonus_open {
+    background: transparent url(../images/32x32/box_open.png) no-repeat;
+}
+
+p.signature {
+    font-family: monospace;
+    font-weight: bolder;
+    padding-left: 15px;
+}
+
+p.deprecated {
+    color: #E60415;
+}
+
+p.deprecated:before {
+    content: 'DEPRECATED ';
+}
+
+div.sample {
+    min-height: 180px;
+    margin-bottom: 40px;
+}
+
+canvas {
+    float: left;
+    margin-left: -145px;
+    margin-top: 5px;
+    width: 150px;
+    height: 150px;
+    border: 1px solid #d7d6d6;
+    border-radius: 3px;
+    background: #f8f8ff;
+}
+
+a.run {
+    color: #ff9933;
+    padding-left: 20px;
+    margin-left: 15px;
+    background: transparent url(../images/16x16/lightning.png) no-repeat;
+    border-bottom: 1px dashed #ff9933;
+}
+
+footer {
+    margin: 250px 0 50px 0;
+    color: #999999;
+}

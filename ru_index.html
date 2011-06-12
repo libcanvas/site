@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Документация по LibCanvas версии 0.1</title>
+
+
+    <link rel="stylesheet" type="text/css" href="css/reset-min.css">
+    <link rel="stylesheet" type="text/css" href="css/base-min.css">
+    <link rel="stylesheet" type="text/css" href="css/styles/github.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+
+    <script src="js/libs/atom-full-compiled.js"></script>
+    <script src="js/libs/libcanvas-full-compiled.js"></script>
+    <script src="js/libs/highlight.pack.js"></script>
+
+    <script src="js/doc.js"></script>
+    <script src="js/app.js"></script>
+</head>
+<body>
+
+<div id="container">
+    <header>
+        <h1>LibCanvas</h1>
+
+        <p>
+            <strong>LibCanvas</strong> — фреймворк для работы с Canvas и сопутствующими технологиями, который может
+            применяться для
+            разработки игр и других интерактивных приложений прямо в вашем браузере.
+        </p>
+
+        <p>
+            Он построен на базе AtomJS — лёгкого JavaScript фреймворка, чем-то похожего на MooTools и jQuery. Есть
+            вполне неплохая английская документация AtomJS и, если вы использовали MooTools до этого, то вам будет
+            достаточно просто осилить AtomJS.
+        </p>
+
+        <div id="profit">
+            <div class="bonus">
+                <h3>Простой и мощный</h3>
+
+                <p id="bonus_simple">
+                    Сanvas классная штука! LibCanvas создан для того, что бы сделать вашу работу с растровой графикой в
+                    браузере еще удобнее, при этом сохраняя совместимость со всеми оригинальными функциями старого
+                    доброго Canvas. Откиньтесь на кресле и позвольте нам сделать всю рутинную работу за вас!
+                </p>
+            </div>
+
+            <div class="bonus">
+                <h3>Современный</h3>
+
+                <p id="bonus_modern">Использовать LibCanvas — значит быть на передовом крае веб разработки. HTML5, CSS3, Canvas, огромные
+                    кучи денег, дорогие машины, популярность и любовь публики: все это доступно вам прямо сейчас!
+                    Спешите попробовать!
+                </p>
+
+                <p>
+                    Отказавшись от поддержки костылей и хаков для старых браузеров со свалки истории, мы используем
+                    чистый код и много современных классных штук, к примеру <a
+                        href="http://ejohn.org/blog/javascript-getters-and-setters/">getters/setters</a>.
+                </p>
+            </div>
+
+            <div class="bonus">
+                <h3>Открытый</h3>
+
+                <p id="bonus_open">Исходный код LibCanvas доступен на <a href="https://github.com/theshock/libcanvas">Гитхабе</a>.
+                    В соответствии с заветами дедушки RMS, код лицензирован под <a
+                            href="http://www.gnu.org/copyleft/lgpl.html">LGPL License</a>. Присоединяйтесь!</p>
+            </div>
+
+        </div>
+
+        <nav>
+            <h1></h1>
+            <ul>
+                <li>
+                    <a href="#hello_world">Hello canvas!</a>
+                </li>
+                <li>
+                    <a href="#lets_begin">С чего начать?</a>
+                </li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="#how_to_use">Как завести эту штуку?</a>
+                        </li>
+                        <li>
+                            <a href="#atomjs_wtf">AtomJS?!?! Что-о-а?!</a>
+                        </li>
+                        <li>
+                            <a href="#what_about_ie6">Ок, а что с ie6?!</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#libcanvas_features">Особенности LibCanvas</a>
+                </li>
+                <li>
+                    <a href="#libcanvas_core">LibCanvas.Core</a>
+                </li>
+                <li>
+                    <ul>
+                        <li><a href="#libcanvas_core_context2d">Context2D</a></li>
+                        <li><a href="#libcanvas_core">Canvas2D</a></li>
+                        <li><a href="#libcanvas_core">Point</a></li>
+                        <li><a href="#libcanvas_core">Shape</a></li>
+                        <li><a href="#libcanvas_core">Invoker</a></li>
+                        <li><a href="#libcanvas_core">Layer</a></li>
+                        <li><a href="#libcanvas_core">Animation</a></li>
+                        <li><a href="#libcanvas_core">Geometry</a></li>
+                        <li><a href="#libcanvas_core">Keyboard</a></li>
+                        <li><a href="#libcanvas_core">Mouse</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#libcanvas_shapes">LibCanvas.Shapes</a>
+                </li>
+                <li>
+                    <ul>
+                        <li><a href="#libcanvas_shapes">Line </a></li>
+                        <li><a href="#libcanvas_shapes">Rectangle </a></li>
+                        <li><a href="#libcanvas_shapes">RoundedRectangle</a></li>
+                        <li><a href="#libcanvas_shapes">Circle </a></li>
+                        <li><a href="#libcanvas_shapes">Ellipse </a></li>
+                        <li><a href="#libcanvas_shapes">Path </a></li>
+                        <li><a href="#libcanvas_shapes">Polygon </a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <div id="main" role="main">
+
+
+        <h1 id="hello_world">Hello, Canvas!</h1>
+
+        <div class="sample">
+            <canvas height="150px" width="150px" id="hello_canvas"></canvas>
+            <pre><code class="javascript">    // Получаем элемент canvas c id="hello_canvas"
+    var canvas = atom.dom('#hello_canvas').first;
+
+    // Получаем расширеный контекст LibCanvas
+    var context = canvas.getContext('2d-libcanvas');
+
+    context
+        // очищаем холст
+        .clearAll()
+        // рисуем кружочек
+        .fill(new LibCanvas.Shapes.Circle(45, 45, 30), '#E60415')
+        // и квадратик
+        .fill(new LibCanvas.Shapes.Rectangle(75, 75, 55, 55), '#0086b3');</code></pre>
+            <a class="run" id="hello_canvas_button" href="javascript:void(0);">Выполнить немедленно!!!!11</a>
+        </div>
+
+        <h1 id="lets_begin">С чего начать?</h1>
+
+        <p>Если вы новичок в javascript, попробуйте <a
+                href="http://stackoverflow.com/questions/74884/good-javascript-books">почитать книги</a>, например,
+            <a href="http://eloquentjavascript.net/">Eloquent JavaScript</a>, доступную бесплатно онлайн.</p>
+
+        <p>Если вы слышали о Canvas только краем уха, попробуйте начать с <a
+                href="http://en.wikipedia.org/wiki/Canvas_element">Википедии</a>.</p>
+
+        <p>Про различия Canvas и SVG можно <a
+                href="http://dev.opera.com/articles/view/svg-or-canvas-choosing-between-the-two/">почитать</a>,
+            например, в блоге разработчиков Оперы.</p>
+
+        <h2 id="how_to_use">Как завести эту штуку?</h2>
+
+        <p>Очень просто, следите за руками!</p>
+
+        <p><strong>Раз!</strong> Подключаем <a href="http://github.com/theshock/atomjs">atom.js</a> и <a
+                href="https://github.com/theshock/libcanvas">libcanvas.js</a>.
+            Лучше всего использовать <strong>*-full-compiled</strong> версии</p>
+
+        <pre><code class="html">    &lt;script src="atom.js"&gt;&lt;/script&gt;
+    &lt;script src="libcanvas.js"&gt;&lt;/script&gt;</code></pre>
+
+        <p><strong>Два!</strong> Добавляем элемент canvas в документ</p>
+        <pre><code class="html">    &lt;canvas&gt;&lt;/canvas&gt;</code></pre>
+
+        <p><strong>Три!</strong> Подписываемся на DOM ready c помощью выбранного вами фреймворка. В функции-обработчике
+            этого события получаем объект <a href="#libcanvas_core_canvas2d" class="local">Canvas2d</a> :</p>
+        <pre><code class="javascript"> var context = atom.dom('canvas').first.getContext('2d-libcanvas');</code></pre>
+
+        <p>или (предпочтительнее) объект <a href="#libcanvas_core_context2d" class="local">Context2d</a> :</p>
+        <pre><code class="javascript"> var canvas = LibCanvas('canvas');</code></pre>
+
+        <p>Готово к работе.</p>
+
+        <h3>Полный пример с AtomJs:</h3>
+        <pre><code class="html">    &lt;script src="atom.js"&gt;&lt;/script&gt;
+    &lt;script src="libcanvas.js"&gt;&lt;/script&gt;
+
+    &lt;canvas id="my_canvas"&gt;&lt;/canvas&gt;
+
+    &lt;script type="text/javascript"&gt;
+        atom.dom(function() {
+            var canvas = LibCanvas('#my_canvas');
+        });
+    &lt;/script&gt;</code></pre>
+
+        <h3>Полный пример с jQuery:</h3>
+
+        <pre><code class="html">    &lt;script src="atom.js"&gt;&lt;/script&gt;
+    &lt;script src="libcanvas.js"&gt;&lt;/script&gt;
+    &lt;script src="jquery.js"&gt;&lt;/script&gt;
+
+    &lt;canvas id="my_canvas"&gt;&lt;/canvas&gt;
+
+    &lt;script type="text/javascript"&gt;
+        $(function() {
+            var canvas = LibCanvas('#my_canvas');
+        });
+    &lt;/script&gt;</code></pre>
+
+        <h2 id="atomjs_wtf">AtomJS?!?! Что-о-а?!</h2>
+
+        <p><strong>AtomJs</strong> — легковестный фреймворк, похожий на jQuery или MooTools, но без поддержки
+            устаревших браузеров.
+            Хотя LibCanvas не будет работать без AtomJs, вы <strong>можете</strong> использовать свой любимый $
+            фреймворк без
+            опаски. AtomJs аскетично живет в пространстве имен window.atom.*, не портит прототипы базовых объектов (но
+            добавляет свои методы) и не
+            созает вам никаких проблем!</p>
+
+        <h2 id="what_about_ie6">Ок, а что с ie6?</h2>
+
+        <p>Авторы LibCanvas сознательно отказались от поддержки старых браузеров. Вот список браузеров, которые поддерживаются библиотекой:</p>
+
+        <ul>
+            <li>Firefox 3.5+</li>
+            <li>Google Chrome / Chromium</li>
+            <li>Safari 4+</li>
+            <li>Opera 10+</li>
+            <li>Internet Explorer 9+</li>
+        </ul>
+
+        <h1 id="libcanvas_features">Особенности LibCanvas</h1>
+
+        <h1 id="libcanvas_core">LibCanvas.Core</h1>
+
+        <h2 id="libcanvas_core_context2d">Context2D</h2>
+
+        <p><strong>LibCanvas.Context2D</strong> — значительно расширенный стандартный 2d-контекст. Основная его идея
+            - все методы, если не требуется иного возвращают ссылку на контекст для использования в цепочках
+            вызовов, возможность использования именованных аргументов и использование объектов LibCanvas. Кроме
+            этого он предоставляет множество нестандартных методов.
+        </p>
+
+        <p>Получить объект Context2D можно следующим образом:</p>
+        <pre><code class="javascript">    var context = canvas.getContext('2d-libcanvas');</code></pre>
+
+        <h2>Свойства canvas</h2>
+
+        <h3>get и set</h3>
+
+        <p>Получить свойства холста можно с помощью вызова:</p>
+        <pre><code class="javascript">    context.get('свойство');</code></pre>
+
+        <p>либо напрямую вызвав нужное свойство:</p>
+        <pre><code class="javascript">    context.свойство;</code></pre>
+
+        <p>Установить свойство можно вызовом метода set, передавая параметры напрямую:</p>
+        <pre><code class="javascript">    context.set('свойство', 'значение');</code></pre>
+
+        <p>либо передавая объект с несколькими свойствами сразу:</p>
+        <pre><code class="javascript">    context.set({свойство1: 'значение1', свойство2: 'значение2'});</code></pre>
+
+        <p>Canvas браузера использует следующие свойства:</p>
+        <ul>
+            <li>fillStyle</li>
+            <li>font</li>
+            <li>globalAlpha</li>
+            <li>globalCompositeOperation</li>
+            <li>lineCap</li>
+            <li>lineJoin</li>
+            <li>lineWidth</li>
+            <li>miterLimit</li>
+            <li>shadowOffsetX</li>
+            <li>shadowOffsetY</li>
+            <li>shadowBlur</li>
+            <li>shadowColor</li>
+            <li>strokeStyle</li>
+            <li>textAlign</li>
+            <li>textBaseline</li>
+        </ul>
+
+        <p>Подробную информацию по каждому свойству можно <a href="https://developer.mozilla.org/En/Canvas_tutorial/Applying_styles_and_colors">получить</a> на сайте MDN</p>
+        <div id="Context2d_property" class="sample"></div>
+
+        <h3>height и width</h3>
+        <p>Дополнительно, LibCanvas позволяет получить размеры холста, используя свойства только для чтения height и width</p>
+        <p class="signature">height : int</p>
+        <p class="signature">width : int</p>
+
+        <h3>rectangle </h3>
+        <p class="signature">rectangle : LibCanvas.Shapes.Rectangle</p>
+        <p>Возвращает объект Rectangle, который равен по размерам холсту.</p>
+        <div id="Context2d_rectangle" class="sample"></div>
+
+        <h1>Методы Context2d</h1>
+
+        <h3>arc </h3>
+        <p class="signature">arc(int x, int y, int radius, float startAngle, float endAngle) : this</p>
+        <p class="signature">arc(int x, int y, int radius, float startAngle, float endAngle, bool anticlockwise) : this</p>
+        <p>Проложить дугу. Параметр anticlockwise или acw — отвечает на за направление движения против часовой стрелки.
+            Если параметр опущен или false — движение по часовой стрелке, иначе — против часовой.</p>
+        <div id="Context2d_arc_1" class="sample"></div>
+
+        <p class="signature">arc({circle: LibCanvas.Shapes.Circle, angle: Object}) : this</p>
+        <p class="signature">arc({circle: LibCanvas.Shapes.Circle circle, angle: Object, anticlockwise: bool}) : this</p>
+        <p><strong>angle</strong> — угол, который дуга отрисовывает. Необходимо два из трех параметров:</p>
+        <ul>
+            <li>start (int) — откуда дуга начинается (в радианах)</li>
+            <li>end (int) — где дуга заканчивается (в радианах)</li>
+            <li>size (int) — размер дуги (в радианах)</li>
+        </ul>
+        <div id="Context2d_arc_2" class="sample"></div>
+
+        <p class="signature">arc({circle: LibCanvas.Shapes.Circle, angle: Array}) : this</p>
+        <p class="signature">arc({circle: LibCanvas.Shapes.Circle, angle: Array, anticlockwise: bool}) : this</p>
+        <p>Если передан массив из двух элементов, то предполагается, что первый — это start, а второй — end</p>
+        <div id="Context2d_arc_3" class="sample"></div>
+
+        <h3>arcTo </h3>
+        <p class="signature">arcTo(x1, y1, x2, y2, radius) : this</p>
+        <p>Рисует дугу заданного радиуса внутри угла, заданного двумя пересекающимися прямыми с координатам x1, y1 и x2, y2</p>
+        <div id="Context2d_arcTo" class="sample"></div>
+
+        <h3 id='libcanvas_core_context2d_begin_and_close_path'>beginPath and closePath </h3>
+        <p class="signature">beginPath() : this</p>
+        <p class="signature">beginPath(LibCanvas.Point point) : this</p>
+        <p class="signature">beginPath(int x, int y) : this</p>
+        <p>Открывает путь. Если есть аргументы, то вызывает метод moveTo.</p>
+
+        <p class="signature">closePath() : this</p>
+        <p class="signature">closePath(LibCanvas.Point point) : this</p>
+        <p class="signature">closePath(int x, int y) : this</p>
+        <p>Закрывает путь. Если есть аргументы, то вызывает метод lineTo.</p>
+
+        <div id="Context2d_begin_n_close_path_1" class="sample"></div>
+        <p>Более коротка форма записи:</p>
+        <div id="Context2d_begin_n_close_path_2" class="sample"></div>
+
+
+        <h3>bezierCurveTo </h3>
+
+        <h3>clearAll </h3>
+        <p class="signature">clearAll() : this</p>
+        <p>Очищает холст.</p>
+        <div id="Context2d_clearAll" class="sample"></div>
+
+        <h3>clearRect </h3>
+
+        <h3>clip </h3>
+
+        <h3>closePath </h3>
+
+        <h3>createImageData </h3>
+
+        <h3>createLinearGradient </h3>
+
+        <h3>createPattern </h3>
+
+        <h3>createRadialGradient </h3>
+
+        <h3>curveTo </h3>
+
+        <h3>drawImage </h3>
+
+        <h3>drawWindow </h3>
+
+        <h3>fill </h3>
+
+        <h3>fillAll </h3>
+        <p class="signature">fillAll() : this</p>
+        <p class="signature">fillAll(string fillStyle) : this</p>
+        <p>Заливает весь холст цветом fillStyle или цветом по-умолчанию, если аргумент не передан.</p>
+        <div id="Context2d_fillAll" class="sample"></div>
+
+
+        <h3>fillRect </h3>
+
+        <h3>fillText </h3>
+
+        <h3>getClone </h3>
+        <p class='signature'>getClone() : HTMLCanvasElement</p>
+        <p class='signature'>getClone(int width, int height) : HTMLCanvasElement</p>
+        <p>Возвращает холст, равный по изображению и с измененным размером, если указаны width и height. Может
+            применятся для создания копии текущего слоя, маленькой иконки, итд.</p>
+        <div id="Context2d_getClone" class="sample"></div>
+
+        <h3>getFullRectangle</h3>
+        <p class='signature deprecated'>getFullRectangle() : LibCanvas.Shapes.Rectangle</p>
+
+        <h3>getImageData </h3>
+
+        <h3>getPixels </h3>
+
+        <h3>initialize </h3>
+
+        <h3>isPointInPath </h3>
+
+        <h3>lineTo </h3>
+
+        <h3>measureText </h3>
+
+        <h3>moveTo</h3>
+        <p class="signature">moveTo(LibCanvas.Point point) : this</p>
+        <p class="signature">moveTo(int x, int y) : this</p>
+        <p>Перемещает указатель пути в точку point.
+            Cм <a href="#libcanvas_core_context2d_begin_and_close_path" class="local">beginPath and closePath</a> </p>
+
+
+        <h3>original </h3>
+
+        <h3>parent </h3>
+
+        <h3>projectiveImage </h3>
+
+        <h3>putImageData </h3>
+
+        <h3>quadraticCurveTo </h3>
+
+        <h3>rotate </h3>
+
+        <h3>save and restore </h3>
+        <p class='signature'>save() : this</p>
+        <p>Сохраняет настройки холста в стек.</p>
+        <p class='signature'>restore() : this</p>
+        <p>Восстанавливает последние сохранённые настройки холста.</p>
+        <div id="Context2d_save_n_restore" class="sample"></div>
+
+
+        <h3>scale </h3>
+
+        <h3>setTransform </h3>
+
+        <h3>stroke </h3>
+
+        <h3>strokeAll </h3>
+        <p class='signature'>strokeAll() : this</p>
+        <p class='signature'>strokeAll(string strokeStyle) : this</p>
+        <p>Обводит весь холст цветом strokeStyle или цветом по-умолчанию, если аргумент не передан.</p>
+        <div id="Context2d_strokeAll" class="sample"></div>
+
+        <h3>strokeRect </h3>
+
+        <h3>strokeText </h3>
+
+        <h3>text </h3>
+
+        <h3>transform </h3>
+
+        <h3>translate </h3>
+
+        <h2 id="libcanvas_core_canvas2d">Canvas2D</h2>
+
+    </div>
+
+    <footer>
+        <p>При разработке использованы: техники <a href="http://developer.yahoo.com/yui/3/cssreset/">reset.css</a> и <a href="http://developer.yahoo.com/yui/3/cssbase/">base.css</a> из YUI3,
+            библиотека Ивана Сагалаева для подсветки синтаксиса <a href="http://softwaremaniacs.org/soft/highlight/en/">highlight.js</a> и
+            набор иконок <a href="http://www.fatcow.com/free-icons">Farm-Fresh Web Icons</a> от Fatcow.
+        </p>
+
+    </footer>
+</div>
+
+</body>
+</html>

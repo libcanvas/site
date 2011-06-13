@@ -95,168 +95,6 @@ LibCanvas.namespace( 'Animation', 'Behaviors', 'Engines', 'Inner', 'Processors',
 /*
 ---
 
-name: "Animation.Sprite"
-
-description: "Provides basic animation via sprites"
-
-license: "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-
-authors:
-	- "Shock <shocksilien@gmail.com>"
-
-requires:
-	- LibCanvas
-
-provides: Animation.Sprite
-
-...
-*/
-
-LibCanvas.Animation.Sprite = atom.Class({
-	Implements: [atom.Class.Events],
-	sprites : null,
-
-	initialize: function () {
-		this.sprites = {};
-	},
-	addSprite : function (index, sprite) {
-		this.sprites[index] = sprite;
-		return this;
-	},
-	addSprites : function (sprites, width) {
-		if (atom.typeOf(sprites) == 'object') {
-			atom.extend(this.sprites, sprites);
-		} else {
-			for (var w = 0; (w * width) < sprites.width; w++) {
-				this.addSprite(w, sprites.sprite(width*w, 0, width, sprites.height));
-			}
-		}
-		return this;
-	},
-	defaultSprite : null,
-	setDefaultSprite : function (index) {
-		this.defaultSprite = index;
-		return this;
-	},
-	get sprite () {
-		return this._getFrame() ? this.sprites[this._getFrame().sprite] :
-			this.defaultSprite != null ? this.sprites[this.defaultSprite] : null;
-	},
-	getSprite : function () {
-		return this.sprite;
-	},
-
-	animations : {},
-	add : function (animation, line) {
-		if (arguments.length == 2) {
-			return this.add({ name: animation, line: line });
-		}
-
-		if (!animation.frames && animation.line) {
-			animation.frames = [];
-			animation.line.forEach(function (f, i) {
-				animation.frames.push({sprite: f, delay: animation.delay || 40, name: i});
-			});
-			delete animation.line;
-			return this.add(animation);
-		}
-		this.animations[animation.name] = animation;
-		return this;
-	},
-
-	_singleAnimationId: 0,
-	runOnce: function (cfg) {
-		var name = '_singleAnimation' + this._singleAnimationId++;
-		if (Array.isArray(cfg)) cfg = { line: cfg };
-
-		return this
-			.add(atom.extend({ name : name }, cfg))
-			.run(name);
-	},
-
-	_current : null,
-	_queue : [],
-	run : function (name, cfg) {
-		if (typeof name != 'string') {
-			return this.runOnce(name);
-		}
-		if (!name in this.animations) {
-			throw new Error('No animation «' + name + '»');
-		}
-		var args = {
-			name : name,
-			cfg  : cfg || {}
-		};
-		if (this._current) {
-			this._queue.push(args);
-		} else {
-			this._init(args);
-		}
-		return this;
-	},
-	stop : function (force) {
-		this._current = null;
-		if (force) {
-			this._queue = [];
-		} else {
-			this._stopped();
-		}
-		return this;
-	},
-	_stopped : function () {
-		var next = this._queue.shift();
-		return next != null && this._init(next);
-	},
-	_init : function (args) {
-		this._current = {
-			animation : this.animations[args.name],
-			index     : -1,
-			cfg       : args.cfg
-		};
-		this._current.repeat = this._getCfg('repeat');
-		return this._nextFrame();
-	},
-	_nextFrame : function () {
-		if (!this._current) return this;
-
-		this._current.index++;
-		var frame = this._getFrame();
-		if (!frame && (this._getCfg('loop') || this._current.repeat)) {
-			this._current.repeat && this._current.repeat--;
-			this._current.index = 0;
-			frame = this._getFrame();
-		}
-		var aniName = this._current.animation.name;
-		if (frame) {
-			var frameName = frame.name ? 'frame:' + frame.name : 'frame';
-			this.fireEvent('changed', [frameName, aniName]);
-			this.fireEvent(frameName, [frameName, aniName]);
-			// use invoker instead
-			if (frame.delay != null) this._nextFrame.delay(frame.delay, this);
-		} else {
-			this.fireEvent('changed', ['stop:' + aniName]);
-			this.fireEvent('stop:' + aniName, ['stop:' + aniName]);
-			this.fireEvent('stop', [aniName]);
-			this._current = null;
-			this._stopped();
-		}
-		return this;
-	},
-	_getFrame : function () {
-		return this._current ? this._current.animation.frames[this._current.index] : null;
-	},
-	_getCfg : function (index) {
-		return index in this._current.cfg ?
-			this._current.cfg[index] :
-			this._current.animation[index];
-	},
-	toString: Function.lambda('[object LibCanvas.Animation]')
-});
-
-
-/*
----
-
 name: "Invoker"
 
 description: "Invoker calles functions"
@@ -702,11 +540,15 @@ LibCanvas.Behaviors.Animatable = atom.Class({
 			time  : 500
 		}, args);
 
+		if (typeof args.props == 'function') {
+			elem = args.props;
+			isFn = true;
+		}
+		args.params = Array.from(args.params);
+
 		if (!Array.isArray(args.fn)) {
 			args.fn = args.fn.split('-');
 		}
-
-		args.params = Array.from(args.params);
 
 		var timeLeft = args.time,
 			diff     = {},
@@ -738,7 +580,7 @@ LibCanvas.Behaviors.Animatable = atom.Class({
 			var factor = TF.count(args.fn, progress, args.params);
 
 			if (isFn) {
-				elem(factor);
+				elem.call(this, factor);
 			} else {
 				for (var i in diff) {
 					Object.path.set( elem, i,
@@ -784,6 +626,215 @@ LibCanvas.Behaviors.Animatable = atom.Class({
 });
 
 })(LibCanvas);
+
+/*
+---
+
+name: "Animation.KeyFrame"
+
+description: "Provides basic animation via key frames"
+
+license: "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
+
+authors:
+	- "Shock <shocksilien@gmail.com>"
+
+requires:
+	- LibCanvas
+	- Behaviors.Animatable
+
+provides: Animation.KeyFrame
+
+...
+*/
+
+LibCanvas.Animation.KeyFrame = atom.Class({
+	Implements: [ LibCanvas.Behaviors.Animatable ],
+
+	keyFrames: function (frames, start) {
+		var indexes = [], init = {}, current = 0;
+		for (var i in frames) if (i.ends('%')) {
+			indexes.push( parseInt(i, 10) );
+			
+			for (var p in frames[i]) init[p] = this[p];
+		}
+		indexes.sort();
+
+		(function next () {
+			// add time
+			this.animate({
+				props: frames[indexes[current]],
+				onFinish: next.bind( this )
+			});
+			if (++current == indexes.length) current = 0;
+		}).call(this);
+	},
+
+	toString: Function.lambda('[object LibCanvas.Animation.KeyFrame]')
+});
+
+
+/*
+---
+
+name: "Animation.Sprite"
+
+description: "Provides basic animation via sprites"
+
+license: "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
+
+authors:
+	- "Shock <shocksilien@gmail.com>"
+
+requires:
+	- LibCanvas
+
+provides: Animation.Sprite
+
+...
+*/
+
+LibCanvas.Animation.Sprite = atom.Class({
+	Implements: [atom.Class.Events],
+	sprites : null,
+
+	initialize: function () {
+		this.sprites = {};
+	},
+	addSprite : function (index, sprite) {
+		this.sprites[index] = sprite;
+		return this;
+	},
+	addSprites : function (sprites, width) {
+		if (atom.typeOf(sprites) == 'object') {
+			atom.extend(this.sprites, sprites);
+		} else {
+			for (var w = 0; (w * width) < sprites.width; w++) {
+				this.addSprite(w, sprites.sprite(width*w, 0, width, sprites.height));
+			}
+		}
+		return this;
+	},
+	defaultSprite : null,
+	setDefaultSprite : function (index) {
+		this.defaultSprite = index;
+		return this;
+	},
+	get sprite () {
+		return this._getFrame() ? this.sprites[this._getFrame().sprite] :
+			this.defaultSprite != null ? this.sprites[this.defaultSprite] : null;
+	},
+	getSprite : function () {
+		return this.sprite;
+	},
+
+	animations : {},
+	add : function (animation, line) {
+		if (arguments.length == 2) {
+			return this.add({ name: animation, line: line });
+		}
+
+		if (!animation.frames && animation.line) {
+			animation.frames = [];
+			animation.line.forEach(function (f, i) {
+				animation.frames.push({sprite: f, delay: animation.delay || 40, name: i});
+			});
+			delete animation.line;
+			return this.add(animation);
+		}
+		this.animations[animation.name] = animation;
+		return this;
+	},
+
+	_singleAnimationId: 0,
+	runOnce: function (cfg) {
+		var name = '_singleAnimation' + this._singleAnimationId++;
+		if (Array.isArray(cfg)) cfg = { line: cfg };
+
+		return this
+			.add(atom.extend({ name : name }, cfg))
+			.run(name);
+	},
+
+	_current : null,
+	_queue : [],
+	run : function (name, cfg) {
+		if (typeof name != 'string') {
+			return this.runOnce(name);
+		}
+		if (!name in this.animations) {
+			throw new Error('No animation «' + name + '»');
+		}
+		var args = {
+			name : name,
+			cfg  : cfg || {}
+		};
+		if (this._current) {
+			this._queue.push(args);
+		} else {
+			this._init(args);
+		}
+		return this;
+	},
+	stop : function (force) {
+		this._current = null;
+		if (force) {
+			this._queue = [];
+		} else {
+			this._stopped();
+		}
+		return this;
+	},
+	_stopped : function () {
+		var next = this._queue.shift();
+		return next != null && this._init(next);
+	},
+	_init : function (args) {
+		this._current = {
+			animation : this.animations[args.name],
+			index     : -1,
+			cfg       : args.cfg
+		};
+		this._current.repeat = this._getCfg('repeat');
+		return this._nextFrame();
+	},
+	_nextFrame : function () {
+		if (!this._current) return this;
+
+		this._current.index++;
+		var frame = this._getFrame();
+		if (!frame && (this._getCfg('loop') || this._current.repeat)) {
+			this._current.repeat && this._current.repeat--;
+			this._current.index = 0;
+			frame = this._getFrame();
+		}
+		var aniName = this._current.animation.name;
+		if (frame) {
+			var frameName = frame.name ? 'frame:' + frame.name : 'frame';
+			this.fireEvent('changed', [frameName, aniName]);
+			this.fireEvent(frameName, [frameName, aniName]);
+			// use invoker instead
+			if (frame.delay != null) this._nextFrame.delay(frame.delay, this);
+		} else {
+			this.fireEvent('changed', ['stop:' + aniName]);
+			this.fireEvent('stop:' + aniName, ['stop:' + aniName]);
+			this.fireEvent('stop', [aniName]);
+			this._current = null;
+			this._stopped();
+		}
+		return this;
+	},
+	_getFrame : function () {
+		return this._current ? this._current.animation.frames[this._current.index] : null;
+	},
+	_getCfg : function (index) {
+		return index in this._current.cfg ?
+			this._current.cfg[index] :
+			this._current.animation[index];
+	},
+	toString: Function.lambda('[object LibCanvas.Animation.Sprite]')
+});
+
 
 /*
 ---
@@ -1015,6 +1066,7 @@ var Point = LibCanvas.Point = atom.Class({
 		
 		var radius = pivot.distanceTo(this);
 		var sides  = pivot.diff(this);
+		// TODO: check, maybe here should be "sides.y, sides.x" ?
 		var newAngle = Math.atan2(sides.x, sides.y) - angle;
 
 		return this.moveTo({
@@ -1954,7 +2006,7 @@ var Trace = LibCanvas.Utils.Trace = atom.Class({
 			atom.dom.create('div', { 'id' : 'traceContainer'})
 				.css({
 					'zIndex'   : '87223',
-					'position' : 'absolute',
+					'position' : 'fixed',
 					'top'      : '3px',
 					'right'    : '6px',
 					'maxWidth' : '70%'
@@ -2684,7 +2736,7 @@ LibCanvas.Shapes.Polygon = atom.Class({
 		return Array.toHash(this.points);
 	},
 	clone: function () {
-		return new this.self(this.points);
+		return new this.self(this.points.invoke('clone'));
 	},
 	toString: Function.lambda('[object LibCanvas.Shapes.Polygon]')
 });
@@ -3930,7 +3982,8 @@ LibCanvas.Context2D = atom.Class({
 
 	// image
 	createImageData : function () {
-		var w,h;
+		var w, h;
+
 		var args = Array.pickFrom(arguments);
 		switch (args.length) {
 			case 0:{
@@ -3939,13 +3992,13 @@ LibCanvas.Context2D = atom.Class({
 			} break;
 
 			case 1: {
-				var o = args[0];
-				if (typeof o == 'object' && 'width' in o && 'height' in o) {
-					w = o.width;
-					h = o.height;
+				var obj = args[0];
+				if (atom.typeOf(obj) == 'object' && ('width' in obj) && ('height' in obj)) {
+					w = obj.width;
+					h = obj.height;
 				}
 				else {
-					throw new TypeError('Wrong args number in the Context.createImageData');
+					throw new TypeError('Wrong argument in the Context.createImageData');
 				}
 			} break;
 
@@ -4017,6 +4070,7 @@ LibCanvas.Context2D = atom.Class({
 			.render(new Shapes.Polygon(Array.collect(arg, [0, 1, 3, 2])));
 		return this;
 	},
+
 	putImageData : function () {
 		var a = arguments;
 		var put = {};
@@ -4060,6 +4114,7 @@ LibCanvas.Context2D = atom.Class({
 
 		return this.original('putImageData', args);
 	},
+
 	getImageData : function (rectangle) {
 		var rect = office.makeRect.call(this, arguments);
 
@@ -4261,8 +4316,7 @@ LibCanvas.Context2D.implement({
 		
 		var pos    , p,
 			prevPos, prevP,
-			specPos, specP,
-			angle  , prevAngle,
+			specPos, line1k, line2k, lin1b, line2b,
 			width  , color;
 			
         		
@@ -4270,37 +4324,38 @@ LibCanvas.Context2D.implement({
 		for (var t=-step ; t<1.02 ; t += step) {
 			pos = fn(points, t);
 			color = gradient(t);
-			width = widthFn(t);
+			width = widthFn(t) / 2;
 
 			p = EC.getPoints(prevPos, pos, width, c);
 						
 			if (t >= step) {
-				if (Math.abs(p[2] - prevP[2]) > 0.1) {
-				
-					this.beginPath(prevP[0]);
-					
-					for (var f=0.002 ; f<0.02 ; f += 0.002) {
-						var specPos = fn(points, t - step + f);
-						var specP = EC.getPoints(prevPos, specPos, width, c);
-						this.lineTo(specP[0]);
-					}
-					
-					this
-						.lineTo(p[0])
-						.lineTo(p[1]);
-					
-					for (; f>0.002 ; f -= 0.002) {
-						var specPos = fn(points, t - step + f);
-						var specP = EC.getPoints(prevPos, specPos, width, c);
-						this.lineTo(specP[1]);
-					}
-					
-					this
-						.lineTo(prevP[1])
-						.fill(color)
-						.stroke(color);
+				if (Math.abs(p[2] - prevP[2]) > 0.3) {
+						this
+							.save()
+							
+							.beginPath()
+								.moveTo( prevP[0] )
+								.arc ( prevP[0].clone().scale(0.5, p[0]).x , prevP[0].clone().scale(0.5, p[0]).y , width, 0, Math.PI*2, false )
+								.lineTo( p[1] )
+								.arc ( prevP[1].clone().scale(0.5, p[1]).x , prevP[1].clone().scale(0.5, p[1]).y , width, 0, Math.PI*2, false )
+								.clip()
+							
+							.set('globalCompositeOperation', 'destination-over')
+							.set('lineWidth',width*2)
+							.beginPath(obj.from)
+								.curveTo(obj)
+								.stroke(color)
 						
+							.restore()
+						
+							.beginPath(prevP[0])
+								.lineTo(prevP[1])
+								.lineTo(p[0])
+								.lineTo(p[1])
+								.stroke(color);
+							
 				} else {
+					this.lineWidth = 1;
 					this
 						.beginPath(prevP[0])
 						.lineTo(prevP[1])
@@ -4309,8 +4364,9 @@ LibCanvas.Context2D.implement({
 						.fill(color)
 						.stroke(color);
 				}
+				this
+					
 			}
-			
 			prevP   = p;
 			prevPos = pos;
 		}

@@ -182,7 +182,7 @@
         <p>Очень просто, следите за руками!</p>
 
         <p><strong>Раз!</strong> Подключаем <a href="http://github.com/theshock/atomjs">atom.js</a> и <a
-                href="https://github.com/theshock/libcanvas">libcanvas.js</a>.
+                href="http://github.com/theshock/libcanvas">libcanvas.js</a>.
             Лучше всего использовать <strong>*-full-compiled</strong> версии</p>
 
         <pre><code class="html">    &lt;script src="atom.js"&gt;&lt;/script&gt;
@@ -192,15 +192,15 @@
         <pre><code class="html">    &lt;canvas&gt;&lt;/canvas&gt;</code></pre>
 
         <p><strong>Три!</strong> Подписываемся на DOM ready c помощью выбранного вами фреймворка. В функции-обработчике
-            этого события получаем объект <a href="#libcanvas_core_canvas2d" class="local">Canvas2d</a> :</p>
+            этого события получаем объект <a href="#libcanvas_core_context2d" class="local">Context2d</a> :</p>
         <pre><code class="javascript"> var context = atom.dom('canvas').first.getContext('2d-libcanvas');</code></pre>
 
-        <p>или (предпочтительнее) объект <a href="#libcanvas_core_context2d" class="local">Context2d</a> :</p>
+        <p>или (предпочтительнее) объект <a href="#libcanvas_core_canvas2d" class="local">Canvas2d</a> :</p>
         <pre><code class="javascript"> var canvas = LibCanvas('canvas');</code></pre>
 
         <p>Готово к работе.</p>
 
-        <h3>Полный пример с AtomJs:</h3>
+        <h3>Полный пример с AtomJS:</h3>
         <pre><code class="html">    &lt;script src="atom.js"&gt;&lt;/script&gt;
     &lt;script src="libcanvas.js"&gt;&lt;/script&gt;
 
@@ -208,7 +208,7 @@
 
     &lt;script type="text/javascript"&gt;
         atom.dom(function() {
-            var canvas = LibCanvas('#my_canvas');
+            var canvas = new LibCanvas('#my_canvas');
         });
     &lt;/script&gt;</code></pre>
 
@@ -222,17 +222,17 @@
 
     &lt;script type="text/javascript"&gt;
         $(function() {
-            var canvas = LibCanvas('#my_canvas');
+            var canvas = new LibCanvas('#my_canvas');
         });
     &lt;/script&gt;</code></pre>
 
         <h2 id="atomjs_wtf">AtomJS?!?! Что-о-а?!</h2>
 
-        <p><strong>AtomJs</strong> — легковестный фреймворк, похожий на jQuery или MooTools, но без поддержки
+        <p><strong>AtomJS</strong> — легковестный фреймворк, похожий на jQuery или MooTools, но без поддержки
             устаревших браузеров.
-            Хотя LibCanvas не будет работать без AtomJs, вы <strong>можете</strong> использовать свой любимый $
+            Хотя LibCanvas не будет работать без AtomJS, вы <strong>можете</strong> использовать свой любимый $
             фреймворк без
-            опаски. AtomJs аскетично живет в пространстве имен window.atom.*, не портит прототипы базовых объектов (но
+            опаски. AtomJS аскетично живет в пространстве имен window.atom.*, не портит прототипы базовых объектов (но
             добавляет свои методы) и не
             созает вам никаких проблем!</p>
 

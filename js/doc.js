@@ -118,13 +118,13 @@ var Doc = {
 	},
 
 	Context2d_begin_n_close_path_2: function(context) {
-		context.set('fillStyle', '#0086b3')
+		context
 			.beginPath(30, 30)
 
 			.lineTo(60, 30).lineTo(60, 60)
 
 			.closePath(30, 30)
-			.fill();
+			.fill('#0086b3');
 	},
 
 	Context2d_arc_1 : function(context) {
@@ -180,7 +180,7 @@ var Doc = {
 			.stroke()
 
 			.set({strokeStyle: '#0086b3', lineWidth: 5}).beginPath(60.5, 50.5).lineTo(90.5, 50.5)
-			.arcTo(100, 50, 100, 60, 10).lineTo(100.5, 90.5)
+			.arcTo(100, 50, 100.5, 60, 10).lineTo(100.5, 90.5)
 			.stroke()
 	},
 

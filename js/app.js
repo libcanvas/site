@@ -3,6 +3,6 @@ atom.dom(function() {
 
     Doc.init();
 
-    hljs.tabReplace = '    ';
+    hljs.tabReplace = '  ';
     hljs.initHighlightingOnLoad();
 });

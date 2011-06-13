@@ -171,6 +171,12 @@
                 href="http://dev.opera.com/articles/view/svg-or-canvas-choosing-between-the-two/">почитать</a>,
             например, в блоге разработчиков Оперы.</p>
 
+        <p>При возниконвении неясных моментов в работе Canvas рекомендуется заглядывать в:</p>
+        <ul>
+            <li>Офигенно классную <a href="http://developers.whatwg.org/the-canvas-element.html">спецификацию для разработчиков</a> от WHATWG</li>
+            <li>и <a href="https://developer.mozilla.org/En/HTML/Canvas">на огонек</a> к Mozilla Developer Network</li>
+        </ul>
+
         <h2 id="how_to_use">Как завести эту штуку?</h2>
 
         <p>Очень просто, следите за руками!</p>
@@ -350,20 +356,70 @@
         <div id="Context2d_begin_n_close_path_2" class="sample"></div>
 
 
-        <h3>bezierCurveTo </h3>
+        <h3>bezierCurveTo и quadraticCurveTo</h3>
 
+        <p>Рекомендуется использовать <a class="local" href="#libcanvas_core_context2d_curve_to">curveTo</a> вместо этих функций, как более
+            удобный способ.</p>
+        
         <h3>clearAll </h3>
         <p class="signature">clearAll() : this</p>
         <p>Очищает холст.</p>
         <div id="Context2d_clearAll" class="sample"></div>
 
         <h3>clearRect </h3>
+        <p class="signature">clearRect(LibCanvas.Shapes.Rectangle rectangle) : this</p>
+        <p class="signature">clearRect(int fromX, int fromY, int width, int height) : this</p>
+        <p>Очищает прямоугольную область на холсте.</p>
+        <div id="Context2d_clearRect" class="sample"></div>
 
         <h3>clip </h3>
 
-        <h3>closePath </h3>
+        <p class="signature">clip() : this</p>
+        <p class="signature">clip(LibCanvas.Shape shape) : this</p>
+        <p>Ограничивает отрисовку в холст определённым участком. Если аргумент shape не передан, то будет использоваться
+            текущий <a href="#libcanvas_core_context2d_begin_and_close_path" class="local">путь</a></p>
+        <div id="Context2d_clip" class="sample"></div>
 
-        <h3>createImageData </h3>
+        <h3>createImageData, getImageData and putImageData</h3>
+        <p>Функции для попиксельной манипуляции изображением холста. createImageData и getImageData
+            создают новый объект ImageData или получают объект ImageData из существующего холста соответственно.
+            Функция putImageData помещает объект ImageData на холст.
+        </p>
+        <p><a href="https://developer.mozilla.org/en/DOM/ImageData">ImageData</a> — представляет из себя объект, хранящий данные о каждом пикселе холста в формате RGBA (RGB с альфа-каналом).</p>
+
+        <p class="signature">createImageData() : ImageData</p>
+        <p class="signature">createImageData(int width, int height) : ImageData</p>
+        <p class="signature">createImageData(ImageData data) : ImageData</p>
+
+        <p>
+            В первом варианте создает объект ImageData с размером, равным размеру холста,
+            во втором: заданных размеров, в третьем значения width и height устанавливаются в соответствии с width и height объекта data.
+            Функция возвращает объект ImageData, значение каждой точки установлено в RGBA(0, 0, 0, 0)
+        </p>
+
+        <div class="sample" id="Context2d_imageData_1"></div>
+
+        <p class="signature">getImageData() : ImageData</p>
+        <p class="signature">getImageData(int x, int y, int width, int height) : ImageData</p>
+        <p class="signature">getImageData(LibCanvas.Shapes.Rectangle rectangle) : ImageData</p>
+        <p>
+            Возвращает объект ImageData, содержащий информацию о точках, попадающих в область холста, ограниченную аргументами либо
+            объектом LibCanvas.Shapes.Rectangle. Если метод вызван без аргументов, возвращает информацию о точках всего холста.
+        </p>
+
+        <div class="sample" id="Context2d_imageData_2"></div>
+
+        <p class="signature">putImageData(ImageData image, int x, int y) : this</p>
+        <p class="signature">putImageData(ImageData image, int x, int y, int cropX, int cropY, int cropW, int cropH) : this</p>
+        <p class="signature">putImageData({image: ImageData, from: [int x, int y]}) : this</p>
+        <p class="signature">putImageData({<br/>&nbsp;&nbsp;&nbsp;&nbsp;image: ImageData, from: [int x, int y], <br/>&nbsp;&nbsp;&nbsp;&nbsp;crop: [int cropX, int cropY, int cropW, int cropH]<br/>}) : this</p>
+        <p class="signature">putImageData({<br/>&nbsp;&nbsp;&nbsp;&nbsp;image: ImageData, from: [int x, int y], <br/>&nbsp;&nbsp;&nbsp;&nbsp;crop: LibCanvas.Shapes.Rectangle<br/>}) : this</p>
+
+        <p>
+            Рисует полученый объект ImageData на холсте. Если есть параметры crop*, то будут отображены только точки из области, попадающей в прямогульник, описаный параметрами crop*.
+        </p>
+
+        <div class="sample" id="Context2d_imageData_3"></div>
 
         <h3>createLinearGradient </h3>
 
@@ -371,7 +427,7 @@
 
         <h3>createRadialGradient </h3>
 
-        <h3>curveTo </h3>
+        <h3 id="libcanvas_core_context2d_curve_to">curveTo </h3>
 
         <h3>drawImage </h3>
 
@@ -400,8 +456,6 @@
         <h3>getFullRectangle</h3>
         <p class='signature deprecated'>getFullRectangle() : LibCanvas.Shapes.Rectangle</p>
 
-        <h3>getImageData </h3>
-
         <h3>getPixels </h3>
 
         <h3>initialize </h3>
@@ -424,10 +478,6 @@
         <h3>parent </h3>
 
         <h3>projectiveImage </h3>
-
-        <h3>putImageData </h3>
-
-        <h3>quadraticCurveTo </h3>
 
         <h3>rotate </h3>
 

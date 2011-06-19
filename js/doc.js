@@ -223,8 +223,28 @@ var Doc = {
 		var imageData = context.getImageData(40, 40, 80, 80);
 
 		context.clearAll().putImageData({image: imageData, from: [0, 0], crop: [10, 10, 50, 15]});
-	}
+	},
 
+	Context2d_gradients_1: function(context) {
+		var gradient = context.createLinearGradient(0, 0, 0, 150);
+
+		gradient.addColorStop(0, '#00ABEB');
+		gradient.addColorStop(0.5, '#fff');
+		gradient.addColorStop(0.5, '#66CC00');
+		gradient.addColorStop(1, '#fff');
+
+		context.set('fillStyle', gradient).fillRect(10, 10, 130, 130);
+	},
+
+	Context2d_gradients_2: function(context) {
+		var gradient = context.createRadialGradient(55, 55, 20, 70, 70, 50);
+
+		gradient.addColorStop(0, '#FF5F98');
+		gradient.addColorStop(0.75, '#FF0188');
+		gradient.addColorStop(1, 'rgba(255,1,136,0)');
+
+		context.set('fillStyle', gradient).fillAll();
+	}
 
 
 

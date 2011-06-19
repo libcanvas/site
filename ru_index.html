@@ -249,6 +249,8 @@
         </ul>
 
         <h1 id="libcanvas_features">Особенности LibCanvas</h1>
+        <h2>TODO: chains</h2>
+        <h2>TODO: rectangle-like агрументы</h2>
 
         <h1 id="libcanvas_core">LibCanvas.Core</h1>
 
@@ -306,7 +308,7 @@
         <p class="signature">height : int</p>
         <p class="signature">width : int</p>
 
-        <h3>rectangle </h3>
+        <h3 id="libcanvas_core_context2d_rectangle">rectangle </h3>
         <p class="signature">rectangle : LibCanvas.Shapes.Rectangle</p>
         <p>Возвращает объект Rectangle, который равен по размерам холсту.</p>
         <div id="Context2d_rectangle" class="sample"></div>
@@ -421,11 +423,32 @@
 
         <div class="sample" id="Context2d_imageData_3"></div>
 
-        <h3>createLinearGradient </h3>
+        <h3>createLinearGradient и createRadialGradient</h3>
 
-        <h3>createPattern </h3>
+        <p>Методы предназначены для создания объекта <a
+                href="http://msdn.microsoft.com/en-us/library/ff974956(v=vs.85).aspx">CanvasGradient</a>.
+            Объект CanvasGradient хранит в себе информацию о <a href="http://en.wikipedia.org/wiki/Color_gradient">градиенте цвета</a> (типе градиента: линейный или радиальный и
+            цветах градиента). Этот объект можно использовать
+            в качестве заливки контуров или областей примитивов Canvas, для заливки холста и т.д.</p>
 
-        <h3>createRadialGradient </h3>
+        <p class="signature">createLinearGradient(int x1, int y1, int x2, int y2) : CanvasGradient</p>
+        <p class="signature">createLinearGradient(LibCanvas.Point from, LibCanvas.Point to) : CanvasGradient</p>
+        <p class="signature">createLinearGradient(LibCanvas.Shapes.Rectangle rectangle) : CanvasGradient</p>
+        <p>
+            <b>сreateLinearGradient</b> создает линейный градиент. Принимает в качестве аргумента две пары координат, задающих напралвение и длину вектору,
+            относительно которого позиционируются ключевые точки цвета.
+        </p>
+        <div class="sample" id="Context2d_gradients_1"></div>
+
+        <p class="signature">createRadialGradient(int topX, int topY, int topR, int bottomX, int bottomY, int bottomR) : CanvasGradient</p>
+        <p class="signature">createRadialGradient(LibCanvas.Shapes.Circle top, LibCanvas.Shapes.Circle bottom) : CanvasGradient</p>
+        <p>
+            <b>createRadialGradient</b> создает радиальный градиент. Векторы градиента направленны вдоль конуса с основанием bottom, усеченного окружностью top.
+        </p>
+        <div class="sample" id="Context2d_gradients_2"></div>
+
+
+        <h3>createPattern</h3>
 
         <h3 id="libcanvas_core_context2d_curve_to">curveTo </h3>
 
@@ -455,7 +478,8 @@
 
         <h3>getFullRectangle</h3>
         <p class='signature deprecated'>getFullRectangle() : LibCanvas.Shapes.Rectangle</p>
-
+        <p>Используйте свойство <a class='local' href="#libcanvas_core_context2d_rectangle">rectangle</a> вместо этого метода.</p>
+        
         <h3>getPixels </h3>
 
         <h3>initialize </h3>
